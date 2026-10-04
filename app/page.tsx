@@ -1,5 +1,6 @@
 import { searchListings, type EtsyListing } from "@/lib/etsy";
 import { tagFrequency, titleWordFrequency, type TermStat } from "@/lib/analyze";
+import { scoreKeyword } from "@/lib/score";
 
 function StatList({ title, stats }: { title: string; stats: TermStat[] }) {
   return (
@@ -32,16 +33,19 @@ export default async function Home({
 }) {
   const { q } = await searchParams;
   let listings: EtsyListing[] = [];
+  let total = 0;
   let error = "";
 
   if (q) {
     try {
-      listings = await searchListings(q, 48);
+      const result = await searchListings(q, 48);
+      listings = result.listings;
+      total = result.total;
     } catch (e) {
       error = e instanceof Error ? e.message : "Something went wrong";
     }
   }
-
+  const score = listings.length > 0 ? scoreKeyword(listings, total) : null;
   return (
     <main className="mx-auto max-w-5xl p-6">
       <h1 className="text-2xl font-semibold">Keyword research</h1>
@@ -62,6 +66,25 @@ export default async function Home({
           <p className="mt-6 text-sm text-gray-500">
             Based on the top {listings.length} listings for &ldquo;{q}&rdquo;
           </p>
+          {score && (
+            <>
+              <div className="mt-4 grid grid-cols-3 gap-3 text-center">
+                {[
+                  { label: "Demand", value: score.demand },
+                  { label: "Competition", value: score.competition },
+                  { label: "Opportunity", value: score.opportunity },
+                ].map((s) => (
+                  <div key={s.label} className="rounded border p-3">
+                    <p className="text-2xl font-medium">{s.value}</p>
+                    <p className="text-xs text-gray-500">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-2 text-xs text-gray-500">
+                {total.toLocaleString()} listings match this keyword. Scores are early estimates.
+              </p>
+            </>
+          )}
           <div className="mt-4 grid gap-8 md:grid-cols-2">
             <StatList title="Most common tags" stats={tagFrequency(listings)} />
             <StatList title="Most common title words" stats={titleWordFrequency(listings)} />
