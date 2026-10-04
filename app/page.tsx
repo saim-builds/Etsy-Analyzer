@@ -1,4 +1,29 @@
-import { searchListings, type EtsyListing } from "../lib/etsy";
+import { searchListings, type EtsyListing } from "@/lib/etsy";
+import { tagFrequency, titleWordFrequency, type TermStat } from "@/lib/analyze";
+
+function StatList({ title, stats }: { title: string; stats: TermStat[] }) {
+  return (
+    <section>
+      <h2 className="font-semibold">{title}</h2>
+      {stats.length === 0 && <p className="mt-2 text-sm text-gray-500">Not enough data.</p>}
+      <ul className="mt-2 space-y-2">
+        {stats.map((s) => (
+          <li key={s.term} className="text-sm">
+            <div className="flex justify-between">
+              <span>{s.term}</span>
+              <span className="text-gray-500">
+                {s.count} listings ({Math.round(s.share * 100)}%)
+              </span>
+            </div>
+            <div className="mt-1 h-1.5 rounded bg-gray-200">
+              <div className="h-1.5 rounded bg-black" style={{ width: `${s.share * 100}%` }} />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 export default async function Home({
   searchParams,
@@ -11,7 +36,7 @@ export default async function Home({
 
   if (q) {
     try {
-      listings = await searchListings(q);
+      listings = await searchListings(q, 48);
     } catch (e) {
       error = e instanceof Error ? e.message : "Something went wrong";
     }
@@ -33,30 +58,41 @@ export default async function Home({
       {error && <p className="mt-4 text-red-600">{error}</p>}
 
       {listings.length > 0 && (
-        <table className="mt-6 w-full text-left text-sm">
-          <thead>
-            <tr className="border-b">
-              <th className="py-2">Title</th>
-              <th>Price</th>
-              <th>Favorites</th>
-              <th>Tags</th>
-            </tr>
-          </thead>
-          <tbody>
-            {listings.map((l) => (
-              <tr key={l.id} className="border-b align-top">
-                <td className="py-2 pr-3">
-                  <a href={l.url} target="_blank" className="underline">
-                    {l.title}
-                  </a>
-                </td>
-                <td className="pr-3">{l.price}</td>
-                <td className="pr-3">{l.favorites}</td>
-                <td>{l.tags.join(", ")}</td>
+        <>
+          <p className="mt-6 text-sm text-gray-500">
+            Based on the top {listings.length} listings for &ldquo;{q}&rdquo;
+          </p>
+          <div className="mt-4 grid gap-8 md:grid-cols-2">
+            <StatList title="Most common tags" stats={tagFrequency(listings)} />
+            <StatList title="Most common title words" stats={titleWordFrequency(listings)} />
+          </div>
+
+          <h2 className="mt-10 font-semibold">All listings</h2>
+          <table className="mt-2 w-full text-left text-sm">
+            <thead>
+              <tr className="border-b">
+                <th className="py-2">Title</th>
+                <th>Price</th>
+                <th>Favorites</th>
+                <th>Tags</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {listings.map((l) => (
+                <tr key={l.id} className="border-b align-top">
+                  <td className="py-2 pr-3">
+                    <a href={l.url} target="_blank" className="underline">
+                      {l.title}
+                    </a>
+                  </td>
+                  <td className="pr-3">{l.price}</td>
+                  <td className="pr-3">{l.favorites}</td>
+                  <td>{l.tags.join(", ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
       )}
     </main>
   );
