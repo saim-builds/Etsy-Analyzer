@@ -1,122 +1,81 @@
-import { searchListings, type EtsyListing } from "@/lib/etsy";
-import { tagFrequency, titleWordFrequency, type TermStat } from "@/lib/analyze";
-import { scoreKeyword } from "@/lib/score";
+import Link from "next/link";
 
-function StatList({ title, stats }: { title: string; stats: TermStat[] }) {
+const features = [
+  ["Keyword research", "Type a phrase and see demand, competition, and an opportunity score based on live Etsy listings."],
+  ["Common tags", "See which tags and title words the top listings share, so you know what buyers in your niche respond to."],
+  ["Listing audit", "Coming soon: paste a listing and get a checklist of tag and title fixes."],
+];
+
+export default function Home() {
   return (
-    <section>
-      <h2 className="font-semibold">{title}</h2>
-      {stats.length === 0 && <p className="mt-2 text-sm text-gray-500">Not enough data.</p>}
-      <ul className="mt-2 space-y-2">
-        {stats.map((s) => (
-          <li key={s.term} className="text-sm">
-            <div className="flex justify-between">
-              <span>{s.term}</span>
-              <span className="text-gray-500">
-                {s.count} listings ({Math.round(s.share * 100)}%)
-              </span>
-            </div>
-            <div className="mt-1 h-1.5 rounded bg-gray-200">
-              <div className="h-1.5 rounded bg-black" style={{ width: `${s.share * 100}%` }} />
-            </div>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ q?: string }>;
-}) {
-  const { q } = await searchParams;
-  let listings: EtsyListing[] = [];
-  let total = 0;
-  let error = "";
-
-  if (q) {
-    try {
-      const result = await searchListings(q, 48);
-      listings = result.listings;
-      total = result.total;
-    } catch (e) {
-      error = e instanceof Error ? e.message : "Something went wrong";
-    }
-  }
-  const score = listings.length > 0 ? scoreKeyword(listings, total) : null;
-  return (
-    <main className="mx-auto max-w-5xl p-6">
-      <h1 className="text-2xl font-semibold">Keyword research</h1>
-      <form className="mt-4 flex gap-2">
-        <input
-          name="q"
-          defaultValue={q}
-          placeholder="e.g. custom pet portrait"
-          className="flex-1 rounded border px-3 py-2"
-        />
-        <button className="rounded bg-black px-4 py-2 text-white">Analyze</button>
-      </form>
-
-      {error && <p className="mt-4 text-red-600">{error}</p>}
-
-      {listings.length > 0 && (
-        <>
-          <p className="mt-6 text-sm text-gray-500">
-            Based on the top {listings.length} listings for &ldquo;{q}&rdquo;
+    <main>
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-14 lg:grid-cols-2">
+        <div>
+          <h1 className="font-display text-4xl font-semibold leading-tight sm:text-5xl">
+            Find the tags your buyers actually search for
+          </h1>
+          <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">
+            Research keywords and see how competitive they are, using live Etsy listing data.
           </p>
-          {score && (
-            <>
-              <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-                {[
-                  { label: "Demand", value: score.demand },
-                  { label: "Competition", value: score.competition },
-                  { label: "Opportunity", value: score.opportunity },
-                ].map((s) => (
-                  <div key={s.label} className="rounded border p-3">
-                    <p className="text-2xl font-medium">{s.value}</p>
-                    <p className="text-xs text-gray-500">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-2 text-xs text-gray-500">
-                {total.toLocaleString()} listings match this keyword. Scores are early estimates.
-              </p>
-            </>
-          )}
-          <div className="mt-4 grid gap-8 md:grid-cols-2">
-            <StatList title="Most common tags" stats={tagFrequency(listings)} />
-            <StatList title="Most common title words" stats={titleWordFrequency(listings)} />
-          </div>
+          <form action="/keywords" className="mt-8 flex max-w-lg flex-col gap-3 sm:flex-row">
+            <input
+              name="q"
+              placeholder="e.g. custom pet portrait"
+              aria-label="Keyword"
+              className="flex-1 rounded-md border border-line bg-card px-4 py-3"
+            />
+            <button className="rounded-md bg-brand px-6 py-3 font-medium text-onbrand">Analyze keyword</button>
+          </form>
+        </div>
 
-          <h2 className="mt-10 font-semibold">All listings</h2>
-          <table className="mt-2 w-full text-left text-sm">
-            <thead>
-              <tr className="border-b">
-                <th className="py-2">Title</th>
-                <th>Price</th>
-                <th>Favorites</th>
-                <th>Tags</th>
-              </tr>
-            </thead>
-            <tbody>
-              {listings.map((l) => (
-                <tr key={l.id} className="border-b align-top">
-                  <td className="py-2 pr-3">
-                    <a href={l.url} target="_blank" className="underline">
-                      {l.title}
-                    </a>
-                  </td>
-                  <td className="pr-3">{l.price}</td>
-                  <td className="pr-3">{l.favorites}</td>
-                  <td>{l.tags.join(", ")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
+        <div className="rounded-2xl border border-line bg-card p-6">
+          <p className="text-sm text-muted">Example result</p>
+          <p className="mt-1 font-display text-xl font-medium">dog portrait from photo</p>
+          <div className="mt-5 grid grid-cols-3 gap-3 text-center">
+            <div className="rounded-lg bg-tint py-3"><p className="text-2xl font-medium">70</p><p className="text-xs text-muted">Demand</p></div>
+            <div className="rounded-lg bg-tint py-3"><p className="text-2xl font-medium">61</p><p className="text-xs text-muted">Competition</p></div>
+            <div className="rounded-lg border-2 border-accent py-3"><p className="text-2xl font-medium">46</p><p className="text-xs text-muted">Opportunity</p></div>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <span className="tag">custom dog portrait</span>
+            <span className="tag">custom pet portrait</span>
+            <span className="tag">portrait from photo</span>
+            <span className="tag">dog lover gift</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-t border-line">
+        <div className="mx-auto max-w-6xl px-5 py-16">
+          <h2 className="max-w-xl font-display text-3xl font-semibold">Built to get one listing found</h2>
+          <div className="mt-10 divide-y divide-line border-y border-line">
+            {features.map(([title, text]) => (
+              <div key={title} className="grid gap-4 py-7 md:grid-cols-3">
+                <h3 className="font-display text-xl font-medium">{title}</h3>
+                <p className="max-w-xl leading-relaxed text-muted md:col-span-2">{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-tint">
+        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-2">
+          <h2 className="font-display text-3xl font-semibold">Opportunity is demand weighed against competition</h2>
+          <p className="leading-relaxed text-muted">
+            Etsy doesn&apos;t publish real search volume, so scores are estimates. Demand comes from views and favorites on top listings. Competition comes from how many listings match. Use the scores to compare keywords against each other.
+          </p>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-5 py-16">
+        <div className="items-center justify-between gap-8 rounded-2xl bg-brand px-8 py-12 text-onbrand sm:flex">
+          <h2 className="font-display text-3xl font-semibold">Try a keyword now</h2>
+          <Link href="/keywords" className="mt-6 inline-block whitespace-nowrap rounded-md bg-accent px-6 py-3 font-medium text-[#10302F] sm:mt-0">
+            Open keyword research
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }
