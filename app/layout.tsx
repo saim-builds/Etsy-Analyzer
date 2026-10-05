@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Fraunces, DM_Sans } from "next/font/google";
 import ThemeToggle from "@/components/ThemeToggle";
+import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
 const display = Fraunces({ subsets: ["latin"], variable: "--nf-display" });
@@ -12,10 +13,13 @@ export const metadata: Metadata = {
   description: "Research keywords, audit listings, and choose better Etsy tags.",
 };
 
-// Runs before the page paints, so there is no flash of the wrong theme
 const themeScript = `try{var t=localStorage.getItem('theme');if(!t){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.dataset.theme=t}catch(e){}`;
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  const signedIn = !!data?.claims;
+
   return (
     <html lang="en" className={`${display.variable} ${sans.variable}`} suppressHydrationWarning>
       <head>
@@ -31,6 +35,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/keywords" className="hover:text-ink">Keywords</Link>
               <Link href="/compare" className="hover:text-ink">Compare</Link>
               <Link href="/audit" className="hover:text-ink">Listing audit</Link>
+              {signedIn ? (
+                <>
+                  <Link href="/account" className="hover:text-ink">Account</Link>
+                  <form action="/auth/signout" method="post">
+                    <button className="hover:text-ink">Log out</button>
+                  </form>
+                </>
+              ) : (
+                <Link href="/login" className="hover:text-ink">Log in</Link>
+              )}
               <ThemeToggle />
             </nav>
           </div>
