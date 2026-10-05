@@ -29,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
             <nav className="flex items-center gap-6 text-sm text-muted">
               <Link href="/keywords" className="hover:text-ink">Keywords</Link>
+              <Link href="/compare" className="hover:text-ink">Compare</Link>
               <Link href="/audit" className="hover:text-ink">Listing audit</Link>
               <ThemeToggle />
             </nav>

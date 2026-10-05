@@ -1,5 +1,5 @@
 import { searchListings, type EtsyListing } from "@/lib/etsy";
-import { tagFrequency, titleWordFrequency, type TermStat } from "@/lib/analyze";
+import { tagFrequency, titleWordFrequency, longTailPhrases, type TermStat } from "@/lib/analyze";
 import { scoreKeyword } from "@/lib/score";
 
 // Tuning knob: where "High" and "Medium" begin
@@ -66,6 +66,7 @@ export default async function KeywordsPage({
 
     const score = listings.length > 0 ? scoreKeyword(listings, total) : null;
     const tags = tagFrequency(listings);
+    const longTail = q ? longTailPhrases(listings, q) : [];
 
     return (
         <main className="mx-auto max-w-6xl px-5 py-10">
@@ -102,7 +103,29 @@ export default async function KeywordsPage({
                             </span>
                         ))}
                     </div>
-
+                    <h2 className="mt-10 font-display text-xl font-medium">Long-tail ideas</h2>
+                    <p className="mt-1 text-sm text-muted">
+                        Longer phrases built on &ldquo;{q}&rdquo; that appear in several top listings.
+                    </p>
+                    {longTail.length === 0 ? (
+                        <p className="mt-3 text-sm text-muted">Not enough repeated phrases found.</p>
+                    ) : (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                            {longTail.map((p) => (
+                                <span key={p.term} className="tag">
+                                    {p.term} <span className="text-muted">{p.count}</span>
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                    <div className="mt-6 flex flex-wrap gap-3 text-sm">
+                        <a href={`/api/export?q=${encodeURIComponent(q ?? "")}&type=tags`} className="rounded-md border border-line bg-card px-4 py-2 font-medium hover:border-brand">
+                            Download tags CSV
+                        </a>
+                        <a href={`/api/export?q=${encodeURIComponent(q ?? "")}&type=listings`} className="rounded-md border border-line bg-card px-4 py-2 font-medium hover:border-brand">
+                            Download listings CSV
+                        </a>
+                    </div>
                     <div className="mt-8 grid gap-5 md:grid-cols-2">
                         <StatList title="Most common tags" stats={tags} />
                         <StatList title="Most common title words" stats={titleWordFrequency(listings)} />
