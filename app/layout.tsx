@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Fraunces, DM_Sans } from "next/font/google";
 import ThemeToggle from "@/components/ThemeToggle";
+import AuthNav from "@/components/AuthNav";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
