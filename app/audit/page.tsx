@@ -2,6 +2,7 @@ import { searchListings } from "@/lib/etsy";
 import { auditListing, parseTags, type AuditResult } from "@/lib/audit";
 import CopyButton from "@/components/CopyButton";
 import { saveAudit } from "@/app/actions";
+import RewritePanel from "@/components/RewritePanel";
 
 function verdict(score: number) {
     if (score >= 80) return { text: "Strong", cls: "text-good" };
@@ -130,6 +131,7 @@ export default async function AuditPage({
                             </button>
                         </form>
                     </div>
+                    <RewritePanel q={q} title={title} tags={tags} />
                 </section>
             )}
         </main>
