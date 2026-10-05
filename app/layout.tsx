@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Fraunces, DM_Sans } from "next/font/google";
 import ThemeToggle from "@/components/ThemeToggle";
-import AuthNav from "@/components/AuthNav";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
@@ -36,6 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/keywords" className="hover:text-ink">Keywords</Link>
               <Link href="/compare" className="hover:text-ink">Compare</Link>
               <Link href="/audit" className="hover:text-ink">Listing audit</Link>
+              <Link href="/rewrite" className="hover:text-ink">AI rewrite</Link>
               {signedIn ? (
                 <>
                   <Link href="/account" className="hover:text-ink">Account</Link>
