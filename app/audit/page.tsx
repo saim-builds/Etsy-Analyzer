@@ -1,6 +1,7 @@
 import { searchListings } from "@/lib/etsy";
 import { auditListing, parseTags, type AuditResult } from "@/lib/audit";
 import CopyButton from "@/components/CopyButton";
+import { saveAudit } from "@/app/actions";
 
 function verdict(score: number) {
     if (score >= 80) return { text: "Strong", cls: "text-good" };
@@ -118,8 +119,16 @@ export default async function AuditPage({
                             </span>
                         ))}
                     </div>
-                    <div className="mt-4">
+                    <div className="mt-4 flex flex-wrap gap-3">
                         <CopyButton text={result.fullSet.join(", ")} />
+                        <form action={saveAudit}>
+                            <input type="hidden" name="q" value={q} />
+                            <input type="hidden" name="title" value={title} />
+                            <input type="hidden" name="tags" value={tags} />
+                            <button className="rounded-md border border-line bg-card px-4 py-2 text-sm font-medium hover:border-brand">
+                                Save this audit
+                            </button>
+                        </form>
                     </div>
                 </section>
             )}

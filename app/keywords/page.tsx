@@ -1,6 +1,7 @@
 import { searchListings, type EtsyListing } from "@/lib/etsy";
 import { tagFrequency, titleWordFrequency, longTailPhrases, type TermStat } from "@/lib/analyze";
 import { scoreKeyword } from "@/lib/score";
+import { saveKeyword } from "@/app/actions";
 
 // Tuning knob: where "High" and "Medium" begin
 function opportunityLabel(v: number) {
@@ -47,9 +48,9 @@ function StatList({ title, stats }: { title: string; stats: TermStat[] }) {
 export default async function KeywordsPage({
     searchParams,
 }: {
-    searchParams: Promise<{ q?: string }>;
+    searchParams: Promise<{ q?: string; saved?: string; error?: string }>;
 }) {
-    const { q } = await searchParams;
+    const { q, saved, error: saveError } = await searchParams;
     let listings: EtsyListing[] = [];
     let total = 0;
     let error = "";
@@ -94,7 +95,16 @@ export default async function KeywordsPage({
                         <ScoreCard label="Competition" value={score.competition} />
                         <ScoreCard label="Opportunity" value={score.opportunity} note={opportunityLabel(score.opportunity)} />
                     </div>
-
+                    <div className="mt-5 flex items-center gap-3">
+                        <form action={saveKeyword}>
+                            <input type="hidden" name="term" value={q ?? ""} />
+                            <button className="rounded-md border border-line bg-card px-4 py-2 text-sm font-medium hover:border-brand">
+                                Save keyword
+                            </button>
+                        </form>
+                        {saved && <span className="text-sm text-good">Saved to your account.</span>}
+                        {saveError && <span className="text-sm text-bad">{saveError}</span>}
+                    </div>
                     <h2 className="mt-10 font-display text-xl font-medium">Tags top sellers use</h2>
                     <div className="mt-3 flex flex-wrap gap-2">
                         {tags.map((t) => (

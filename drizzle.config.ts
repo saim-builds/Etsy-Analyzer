@@ -6,6 +6,7 @@
    export default defineConfig({
      schema: "./db/schema.ts",
      out: "./drizzle",
+     tablesFilter: ["keywords", "keyword_snapshots", "listings", "keyword_listings"],
      dialect: "postgresql",
      dbCredentials: { url: process.env.DATABASE_URL! },
    });
