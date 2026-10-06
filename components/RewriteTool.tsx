@@ -10,7 +10,7 @@ export default function RewriteTool() {
     const ready = q.trim().length > 0 && title.trim().length > 0;
 
     return (
-        <div className="mt-6 space-y-4">
+        <div className="mt-8 space-y-5">
             <label className="block">
                 <span className="text-sm font-medium">Target keyword</span>
                 <input
@@ -18,7 +18,7 @@ export default function RewriteTool() {
                     onChange={(e) => setQ(e.target.value)}
                     maxLength={100}
                     placeholder="e.g. dog portrait from photo"
-                    className="mt-1 w-full rounded-md border border-line bg-card px-4 py-3"
+                    className="field mt-2"
                 />
             </label>
             <label className="block">
@@ -29,7 +29,7 @@ export default function RewriteTool() {
                     maxLength={300}
                     rows={2}
                     placeholder="Paste your current listing title"
-                    className="mt-1 w-full rounded-md border border-line bg-card px-4 py-3"
+                    className="field mt-2"
                 />
             </label>
             <label className="block">
@@ -40,7 +40,7 @@ export default function RewriteTool() {
                     maxLength={1000}
                     rows={3}
                     placeholder="Separate tags with commas or new lines"
-                    className="mt-1 w-full rounded-md border border-line bg-card px-4 py-3"
+                    className="field mt-2"
                 />
             </label>
 

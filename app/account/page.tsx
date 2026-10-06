@@ -35,45 +35,45 @@ export default async function AccountPage({
     const audits = (auData ?? []) as Au[];
 
     return (
-        <main className="mx-auto max-w-4xl px-5 py-10">
-            <h1 className="font-display text-3xl font-semibold">Your account</h1>
+        <main className="mx-auto max-w-4xl px-6 py-12">
+            <h1 className="page-title">Your account</h1>
             <p className="mt-3 text-muted">
                 Signed in as <span className="font-medium text-ink">{email}</span>
             </p>
             {failed && <p className="mt-4 text-bad">Could not save that. Please try again.</p>}
 
-            <h2 className="mt-10 font-display text-xl font-medium">Saved keywords</h2>
+            <h2 className="mt-12 text-2xl font-medium tracking-tight">Saved keywords</h2>
             {keywords.length === 0 ? (
-                <p className="mt-3 text-muted">
+                <p className="mt-4 text-muted">
                     Nothing saved yet. Search a phrase on the{" "}
-                    <Link href="/keywords" className="underline">Keywords</Link> page and press Save keyword.
+                    <Link href="/keywords" className="text-violet underline">Keywords</Link> page and press Save keyword.
                 </p>
             ) : (
-                <div className="mt-3 overflow-x-auto rounded-lg border border-line bg-card">
+                <div className="card mt-4 overflow-x-auto">
                     <table className="w-full text-left text-sm">
                         <thead className="border-b border-line text-muted">
                             <tr>
-                                <th className="p-3 font-normal">Keyword</th>
-                                <th className="p-3 font-normal">Demand</th>
-                                <th className="p-3 font-normal">Competition</th>
-                                <th className="p-3 font-normal">Opportunity</th>
-                                <th className="p-3 font-normal">Saved</th>
-                                <th className="p-3" />
+                                <th className="p-4 font-normal">Keyword</th>
+                                <th className="p-4 font-normal">Demand</th>
+                                <th className="p-4 font-normal">Competition</th>
+                                <th className="p-4 font-normal">Opportunity</th>
+                                <th className="p-4 font-normal">Saved</th>
+                                <th className="p-4" />
                             </tr>
                         </thead>
                         <tbody>
                             {keywords.map((k) => (
-                                <tr key={k.id} className="border-b border-line last:border-0">
-                                    <td className="p-3 font-medium">
-                                        <Link href={`/keywords?q=${encodeURIComponent(k.term)}`} className="underline decoration-line underline-offset-2 hover:decoration-brand">
+                                <tr key={k.id} className="border-b border-line last:border-0 hover:bg-white/5">
+                                    <td className="p-4 font-medium">
+                                        <Link href={`/keywords?q=${encodeURIComponent(k.term)}`} className="underline decoration-line underline-offset-4 hover:decoration-violet">
                                             {k.term}
                                         </Link>
                                     </td>
-                                    <td className="p-3">{k.demand}</td>
-                                    <td className="p-3">{k.competition}</td>
-                                    <td className="p-3">{k.opportunity}</td>
-                                    <td className="p-3 text-muted">{date(k.created_at)}</td>
-                                    <td className="p-3 text-right">
+                                    <td className="p-4">{k.demand}</td>
+                                    <td className="p-4">{k.competition}</td>
+                                    <td className="p-4">{k.opportunity}</td>
+                                    <td className="p-4 text-muted">{date(k.created_at)}</td>
+                                    <td className="p-4 text-right">
                                         <form action={deleteKeyword}>
                                             <input type="hidden" name="id" value={k.id} />
                                             <button className="text-muted hover:text-bad">Delete</button>
@@ -86,27 +86,27 @@ export default async function AccountPage({
                 </div>
             )}
             {keywords.length > 0 && (
-                <p className="mt-2 text-xs text-muted">Scores are from the day you saved each keyword. Open one to see current numbers.</p>
+                <p className="mt-3 text-xs text-muted">Scores are from the day you saved each keyword. Open one to see current numbers.</p>
             )}
 
-            <h2 className="mt-10 font-display text-xl font-medium">Audit history</h2>
+            <h2 className="mt-12 text-2xl font-medium tracking-tight">Audit history</h2>
             {audits.length === 0 ? (
-                <p className="mt-3 text-muted">
+                <p className="mt-4 text-muted">
                     No saved audits yet. Run one on the{" "}
-                    <Link href="/audit" className="underline">Listing audit</Link> page and press Save this audit.
+                    <Link href="/audit" className="text-violet underline">Listing audit</Link> page and press Save this audit.
                 </p>
             ) : (
-                <ul className="mt-3 rounded-lg border border-line bg-card">
+                <ul className="card mt-4">
                     {audits.map((a) => (
-                        <li key={a.id} className="flex items-start justify-between gap-4 border-b border-line p-4 last:border-0">
+                        <li key={a.id} className="flex items-start justify-between gap-4 border-b border-line p-5 last:border-0">
                             <div className="min-w-0">
-                                <p className="truncate text-sm font-medium">{a.title}</p>
+                                <p className="truncate font-medium">{a.title}</p>
                                 <p className="mt-1 text-sm text-muted">
                                     {a.keyword} &middot; score {a.score} &middot; {date(a.created_at)}
                                 </p>
                                 <Link
                                     href={`/audit?q=${encodeURIComponent(a.keyword)}&title=${encodeURIComponent(a.title)}&tags=${encodeURIComponent((a.tags ?? []).join(", "))}`}
-                                    className="mt-1 inline-block text-sm underline decoration-line underline-offset-2 hover:decoration-brand"
+                                    className="mt-2 inline-block text-sm text-violet underline"
                                 >
                                     Run again
                                 </Link>

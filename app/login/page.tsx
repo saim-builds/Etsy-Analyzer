@@ -61,60 +61,53 @@ export default function LoginPage() {
     }
 
     return (
-        <main className="mx-auto max-w-md px-5 py-12">
-            <h1 className="font-display text-3xl font-semibold">Log in or sign up</h1>
-            <p className="mt-2 text-muted">Save keywords and audits to your account.</p>
+        <main className="mx-auto max-w-md px-6 py-16">
+            <div className="card p-8">
+                <h1 className="text-3xl font-medium tracking-tight">Log in or sign up</h1>
+                <p className="mt-2 text-muted">Save keywords and audits to your account.</p>
 
-            {error && <p className="mt-5 text-bad">{error}</p>}
-            {message && <p className="mt-5 text-good">{message}</p>}
-            {busy && <p className="mt-5 text-muted">Working...</p>}
+                {error && <p className="mt-5 text-bad">{error}</p>}
+                {message && <p className="mt-5 text-good">{message}</p>}
+                {busy && <p className="mt-5 text-muted">Working...</p>}
 
-            <form
-                className="mt-6 space-y-4"
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    submit("login");
-                }}
-            >
-                <label className="block">
-                    <span className="text-sm font-medium">Email</span>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        autoComplete="email"
-                        className="mt-1 w-full rounded-md border border-line bg-card px-4 py-3"
-                    />
-                </label>
-                <label className="block">
-                    <span className="text-sm font-medium">Password</span>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="current-password"
-                        className="mt-1 w-full rounded-md border border-line bg-card px-4 py-3"
-                    />
-                    <span className="text-xs text-muted">At least 8 characters.</span>
-                </label>
-                <div className="flex gap-3">
-                    <button
-                        type="submit"
-                        disabled={busy}
-                        className="rounded-md bg-brand px-6 py-3 font-medium text-onbrand disabled:opacity-60"
-                    >
-                        Log in
-                    </button>
-                    <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => submit("signup")}
-                        className="rounded-md border border-line bg-card px-6 py-3 font-medium hover:border-brand disabled:opacity-60"
-                    >
-                        Sign up
-                    </button>
-                </div>
-            </form>
+                <form
+                    className="mt-6 space-y-5"
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        submit("login");
+                    }}
+                >
+                    <label className="block">
+                        <span className="text-sm font-medium">Email</span>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            autoComplete="email"
+                            className="field mt-2"
+                        />
+                    </label>
+                    <label className="block">
+                        <span className="text-sm font-medium">Password</span>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            autoComplete="current-password"
+                            className="field mt-2"
+                        />
+                        <span className="mt-1 block text-xs text-muted">At least 8 characters.</span>
+                    </label>
+                    <div className="flex gap-3">
+                        <button type="submit" disabled={busy} className="btn btn-light">
+                            Log in
+                        </button>
+                        <button type="button" disabled={busy} onClick={() => submit("signup")} className="btn btn-ghost">
+                            Sign up
+                        </button>
+                    </div>
+                </form>
+            </div>
         </main>
     );
 }
