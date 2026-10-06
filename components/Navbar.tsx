@@ -13,6 +13,8 @@ const LINKS = [
 export default function Navbar({ signedIn }: { signedIn: boolean }) {
     const pathname = usePathname();
     const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+    const linkClass = (href: string) =>
+        isActive(href) ? "text-violet" : "text-ink hover:text-violet";
 
     return (
         <header>
@@ -26,7 +28,7 @@ export default function Navbar({ signedIn }: { signedIn: boolean }) {
                             key={l.href}
                             href={l.href}
                             aria-current={isActive(l.href) ? "page" : undefined}
-                            className={isActive(l.href) ? "text-violet" : "text-ink hover:text-violet"}
+                            className={linkClass(l.href)}
                         >
                             {l.label}
                         </Link>
@@ -36,7 +38,7 @@ export default function Navbar({ signedIn }: { signedIn: boolean }) {
                             <Link
                                 href="/account"
                                 aria-current={isActive("/account") ? "page" : undefined}
-                                className={isActive("/account") ? "text-violet" : "text-ink hover:text-violet"}
+                                className={linkClass("/account")}
                             >
                                 Account
                             </Link>
@@ -47,9 +49,18 @@ export default function Navbar({ signedIn }: { signedIn: boolean }) {
                             </form>
                         </>
                     ) : (
-                        <Link href="/login" className="rounded-full bg-white px-5 py-2.5 font-medium text-[#0B0A14]">
-                            Log in
-                        </Link>
+                        <>
+                            <Link
+                                href="/login"
+                                aria-current={isActive("/login") ? "page" : undefined}
+                                className={linkClass("/login")}
+                            >
+                                Log in
+                            </Link>
+                            <Link href="/signup" className="rounded-full bg-white px-5 py-2.5 font-medium text-[#0B0A14]">
+                                Sign up
+                            </Link>
+                        </>
                     )}
                 </nav>
             </div>
