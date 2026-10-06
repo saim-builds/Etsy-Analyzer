@@ -1,79 +1,117 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #F5F8F7; --card: #FFFFFF; --ink: #10302F; --muted: #54706D; --line: #D5E0DE;
-  --brand: #0F5C57; --onbrand: #FFFFFF; --accent: #F2A33A; --tint: #E3EFEC;
-  --good: #1F7A4D; --warn: #B26A00; --bad: #B3392F;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0E1B1A; --card: #142624; --ink: #E8F1EF; --muted: #93ADA9; --line: #243836;
-    --brand: #5FD0C5; --onbrand: #0E1B1A; --tint: #1A302D;
-    --good: #58C48C; --warn: #E0A040; --bad: #E57A70;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0E1B1A; --card: #142624; --ink: #E8F1EF; --muted: #93ADA9; --line: #243836;
-  --brand: #5FD0C5; --onbrand: #0E1B1A; --tint: #1A302D;
-  --good: #58C48C; --warn: #E0A040; --bad: #E57A70;
+  --bg: #04030A;
+  --card: #0F0D1F;
+  --tint: #17142B;
+  --ink: #F4F3FA;
+  --muted: #A9A7BD;
+  --line: #26233D;
+  --brand: #6D4AF0;
+  --onbrand: #FFFFFF;
+  --accent: #F5B544;
+  --violet: #A78BFA;
+  --blue: #5B9BFF;
+  --good: #4ADE80;
+  --warn: #FBBF24;
+  --bad: #FB7185;
+  color-scheme: dark;
 }
 
-/* Tailwind CSS v4 directive; supported by Tailwind's CSS processor. */
-/* stylelint-disable-next-line at-rule-no-unknown */
 @theme inline {
   --color-bg: var(--bg);
   --color-card: var(--card);
+  --color-tint: var(--tint);
   --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-brand: var(--brand);
   --color-onbrand: var(--onbrand);
   --color-accent: var(--accent);
-  --color-tint: var(--tint);
+  --color-violet: var(--violet);
+  --color-blue: var(--blue);
   --color-good: var(--good);
   --color-warn: var(--warn);
   --color-bad: var(--bad);
-  --font-display: var(--nf-display), Georgia, serif;
   --font-sans: var(--nf-sans), system-ui, sans-serif;
+  --font-display: var(--nf-sans), system-ui, sans-serif;
 }
 
-body { background: var(--bg); color: var(--ink); }
-
-.tag {
+body {
   position: relative;
-  padding: 6px 12px 6px 26px;
+  isolation: isolate;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+
+input,
+textarea {
+  color: var(--ink);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8f8ca8;
+}
+
+:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 2px;
+}
+
+/* Tag chips used across the app */
+.tag {
+  padding: 6px 14px;
   border: 1px solid var(--line);
-  background: var(--card);
-  border-radius: 4px 14px 14px 4px;
+  background: var(--tint);
+  border-radius: 999px;
   font-size: 14px;
 }
-.tag::before {
-  content: "";
+
+/* Glow layers behind every page */
+.glow-wrap {
   position: absolute;
-  left: 9px; top: 50%;
-  width: 8px; height: 8px; margin-top: -4px;
-  border-radius: 50%;
-  background: var(--bg);
-  border: 1px solid var(--muted);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 900px;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent);
+  mask-image: linear-gradient(to bottom, black 70%, transparent);
 }
-.theme-switch {
-  display: inline-flex;
-  align-items: center;
-  width: 44px;
-  height: 24px;
-  padding: 2px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--tint);
-  cursor: pointer;
+
+.glow-a {
+  position: absolute;
+left: -18%;
+top: 18%;
+width: 80%;
+height: 55%;
+transform: rotate(-22deg);
+background: radial-gradient(ellipse at 35% 50%,#3D8BFF 0%,#7B3FF2 38%,rgba(4,3,10,0) 72%);
+filter: blur(50px);
+opacity: 0.85;
 }
-.theme-switch .knob {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--brand);
-  transition: transform 0.2s;
+
+.glow-b {
+  position: absolute;
+left: -18%;
+top: 18%;
+width: 80%;
+height: 55%;
+transform: rotate(-22deg);
+background: radial-gradient(ellipse at 35% 50%,#3D8BFF 0%,#7B3FF2 38%,rgba(4,3,10,0) 72%);
+filter: blur(50px);
+opacity: 0.85;
 }
-:root[data-theme="dark"] .theme-switch .knob {
-  transform: translateX(20px);
+
+.dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1px, transparent 1px);
+  background-size: 24px 24px;
+  -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent);
+  mask-image: linear-gradient(to bottom, black 30%, transparent);
 }

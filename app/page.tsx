@@ -1,77 +1,85 @@
 import Link from "next/link";
+import PromptBox from "@/components/PromptBox";
 
 const features = [
-  ["Keyword research", "Type a phrase and see demand, competition, and an opportunity score based on live Etsy listings."],
-  ["Common tags", "See which tags and title words the top listings share, so you know what buyers in your niche respond to."],
-  ["Listing audit", "Paste your title and tags and get a checklist of fixes plus a suggested tag set to copy into Etsy."],
+  ["01", "Keyword research", "Type a phrase and see demand, competition, and an opportunity score based on live Etsy listings."],
+  ["02", "Common tags", "See which tags and title words the top listings share, so you know what buyers in your niche respond to."],
+  ["03", "Listing audit", "Paste your title and tags and get a checklist of fixes plus a suggested tag set to copy into Etsy."],
+];
+
+const bars = [
+  { label: "Demand", value: 70, color: "var(--blue)" },
+  { label: "Competition", value: 61, color: "var(--violet)" },
+  { label: "Opportunity", value: 46, color: "var(--accent)" },
 ];
 
 export default function Home() {
   return (
     <main>
-      <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-14 lg:grid-cols-2">
-        <div>
-          <h1 className="font-display text-4xl font-semibold leading-tight sm:text-5xl">
-            Find the tags your buyers actually search for
-          </h1>
-          <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">
-            Research keywords and see how competitive they are, using live Etsy listing data.
-          </p>
-          <form action="/keywords" className="mt-8 flex max-w-lg flex-col gap-3 sm:flex-row">
-            <input
-              name="q"
-              placeholder="e.g. custom pet portrait"
-              aria-label="Keyword"
-              className="flex-1 rounded-md border border-line bg-card px-4 py-3"
-            />
-            <button className="rounded-md bg-brand px-6 py-3 font-medium text-onbrand">Analyze keyword</button>
-          </form>
-        </div>
-
-        <div className="rounded-2xl border border-line bg-card p-6">
-          <p className="text-sm text-muted">Example result</p>
-          <p className="mt-1 font-display text-xl font-medium">dog portrait from photo</p>
-          <div className="mt-5 grid grid-cols-3 gap-3 text-center">
-            <div className="rounded-lg bg-tint py-3"><p className="text-2xl font-medium">70</p><p className="text-xs text-muted">Demand</p></div>
-            <div className="rounded-lg bg-tint py-3"><p className="text-2xl font-medium">61</p><p className="text-xs text-muted">Competition</p></div>
-            <div className="rounded-lg border-2 border-accent py-3"><p className="text-2xl font-medium">46</p><p className="text-xs text-muted">Opportunity</p></div>
-          </div>
-          <div className="mt-6 flex flex-wrap gap-2">
-            <span className="tag">custom dog portrait</span>
-            <span className="tag">custom pet portrait</span>
-            <span className="tag">portrait from photo</span>
-            <span className="tag">dog lover gift</span>
-          </div>
+      <section className="mx-auto max-w-6xl px-6 pb-28 pt-16 text-center md:pt-24">
+        <h1 className="mx-auto max-w-4xl text-5xl font-medium leading-[1.05] tracking-tight md:text-7xl">
+          Find the tags your buyers actually search for
+        </h1>
+        <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-[#CFCDE3]">
+          Research keywords and see how competitive they are, using live Etsy listing data.
+        </p>
+        <div className="mt-12">
+          <PromptBox />
         </div>
       </section>
 
-      <section className="border-t border-line">
-        <div className="mx-auto max-w-6xl px-5 py-16">
-          <h2 className="max-w-xl font-display text-3xl font-semibold">Built to get one listing found</h2>
-          <div className="mt-10 divide-y divide-line border-y border-line">
-            {features.map(([title, text]) => (
-              <div key={title} className="grid gap-4 py-7 md:grid-cols-3">
-                <h3 className="font-display text-xl font-medium">{title}</h3>
-                <p className="max-w-xl leading-relaxed text-muted md:col-span-2">{text}</p>
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-2">
+        <div>
+          <h2 className="text-4xl font-medium leading-tight tracking-tight md:text-5xl">
+            Opportunity is demand weighed against competition
+          </h2>
+          <p className="mt-6 max-w-lg leading-relaxed text-muted">
+            Etsy doesn&apos;t publish real search volume, so scores are estimates. Demand comes from views and favorites on top listings. Competition comes from how many listings match. Use the scores to compare keywords against each other.
+          </p>
+        </div>
+
+        <div className="rounded-3xl border border-line bg-card p-8">
+          <p className="text-xs font-medium uppercase tracking-widest text-muted">Example result</p>
+          <p className="mt-2 text-2xl font-medium">dog portrait from photo</p>
+          <div className="mt-6 space-y-4">
+            {bars.map((b) => (
+              <div key={b.label} className="flex items-center gap-4 text-sm">
+                <span className="w-28 shrink-0">{b.label}</span>
+                <div className="h-2 flex-1 rounded-full bg-white/10">
+                  <div className="h-2 rounded-full" style={{ width: `${b.value}%`, background: b.color }} />
+                </div>
+                <span className="w-8 text-right font-medium">{b.value}</span>
               </div>
+            ))}
+          </div>
+          <div className="mt-7 flex flex-wrap gap-2">
+            {["custom dog portrait", "custom pet portrait", "portrait from photo", "dog lover gift"].map((t) => (
+              <span key={t} className="tag">{t}</span>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-tint">
-        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 md:grid-cols-2">
-          <h2 className="font-display text-3xl font-semibold">Opportunity is demand weighed against competition</h2>
-          <p className="leading-relaxed text-muted">
-            Etsy doesn&apos;t publish real search volume, so scores are estimates. Demand comes from views and favorites on top listings. Competition comes from how many listings match. Use the scores to compare keywords against each other.
-          </p>
+      <section className="mx-auto max-w-6xl px-6 py-16">
+        <h2 className="text-4xl font-medium tracking-tight md:text-5xl">Built to get one listing found</h2>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {features.map(([n, title, text]) => (
+            <div key={n} className="rounded-3xl border border-line bg-card p-8">
+              <p className="text-sm text-violet">{n}</p>
+              <h3 className="mt-6 text-2xl font-medium">{title}</h3>
+              <p className="mt-3 leading-relaxed text-muted">{text}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-16">
-        <div className="items-center justify-between gap-8 rounded-2xl bg-brand px-8 py-12 text-onbrand sm:flex">
-          <h2 className="font-display text-3xl font-semibold">Try a keyword now</h2>
-          <Link href="/keywords" className="mt-6 inline-block whitespace-nowrap rounded-md bg-accent px-6 py-3 font-medium text-[#10302F] sm:mt-0">
+      <section className="mx-auto max-w-6xl px-6 pb-24 pt-8">
+        <div className="items-center justify-between gap-8 rounded-3xl border border-line bg-[linear-gradient(135deg,#5B3FD6,#3A2A9E_55%,#1B1550)] px-10 py-14 md:flex">
+          <h2 className="text-4xl font-medium tracking-tight md:text-5xl">Try a keyword now</h2>
+          <Link
+            href="/keywords"
+            className="mt-6 inline-block whitespace-nowrap rounded-full bg-white px-8 py-4 font-medium text-[#0B0A14] md:mt-0"
+          >
             Open keyword research
           </Link>
         </div>
