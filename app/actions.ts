@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { searchListings } from "@/lib/etsy";
 import { scoreKeyword } from "@/lib/score";
 import { auditListing, parseTags } from "@/lib/audit";
+import { fetchSnapshot } from "@/lib/snapshot";
 
 export async function saveKeyword(formData: FormData) {
     const term = String(formData.get("term") ?? "").trim().toLowerCase();
@@ -82,4 +83,41 @@ export async function deleteAudit(formData: FormData) {
     const supabase = await createClient();
     await supabase.from("audits").delete().eq("id", id);
     revalidatePath("/account");
+}
+
+export async function refreshMyKeywords() {
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getClaims();
+    if (!data?.claims) redirect("/login?next=/account");
+
+    const { data: rows } = await supabase
+        .from("saved_keywords")
+        .select("id, term")
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+    const today = new Date().toISOString().slice(0, 10);
+    let done = 0;
+    for (const row of rows ?? []) {
+        try {
+            const s = await fetchSnapshot(row.term);
+            const { error } = await supabase.from("keyword_history").upsert(
+                {
+                    saved_keyword_id: row.id,
+                    captured_on: today,
+                    demand: s.demand,
+                    competition: s.competition,
+                    opportunity: s.opportunity,
+                    total_results: s.total,
+                },
+                { onConflict: "saved_keyword_id,captured_on" }
+            );
+            if (!error) done++;
+        } catch {
+            // skip this keyword and carry on with the rest
+        }
+    }
+
+    revalidatePath("/account");
+    redirect(`/account?updated=${done}`);
 }
