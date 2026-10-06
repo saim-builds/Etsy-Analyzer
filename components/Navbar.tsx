@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const LINKS = [
+    { href: "/", label: "Home" },
     { href: "/keywords", label: "Keywords" },
     { href: "/compare", label: "Compare" },
     { href: "/audit", label: "Listing audit" },
@@ -115,6 +116,7 @@ export default function Navbar({ signedIn }: { signedIn: boolean }) {
                                         href={l.href}
                                         aria-current={isActive(l.href) ? "page" : undefined}
                                         className={`block rounded-xl px-4 py-3 text-base ${linkClass(l.href)}`}
+                                        onClick={() => setOpenFor(null)}
                                     >
                                         {l.label}
                                     </Link>
