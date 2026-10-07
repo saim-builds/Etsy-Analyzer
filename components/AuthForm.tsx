@@ -1,15 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { createClient } from "@/lib/supabase/client";
+
+const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export default function AuthForm({ mode, next }: { mode: "login" | "signup"; next: string }) {
     const router = useRouter();
+    const turnstile = useRef<TurnstileInstance>(null);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
+    const [captchaToken, setCaptchaToken] = useState("");
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
     const [message, setMessage] = useState("");
@@ -17,6 +22,7 @@ export default function AuthForm({ mode, next }: { mode: "login" | "signup"; nex
     const isSignup = mode === "signup";
     const dest = next.startsWith("/") && !next.startsWith("//") ? next : "/account";
     const suffix = next ? `?next=${encodeURIComponent(next)}` : "";
+    const waitingForCaptcha = !!SITE_KEY && !captchaToken;
 
     async function submit(e: React.FormEvent) {
         e.preventDefault();
@@ -34,15 +40,23 @@ export default function AuthForm({ mode, next }: { mode: "login" | "signup"; nex
             setError("The two passwords do not match.");
             return;
         }
+        if (waitingForCaptcha) {
+            setError("Please wait for the verification check to finish.");
+            return;
+        }
 
         setBusy(true);
         try {
             const supabase = createClient();
+            const token = captchaToken || undefined;
             if (isSignup) {
                 const { data, error } = await supabase.auth.signUp({
                     email: email.trim(),
                     password,
-                    options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+                    options: {
+                        emailRedirectTo: `${window.location.origin}/auth/callback`,
+                        captchaToken: token,
+                    },
                 });
                 if (error) {
                     setError(error.message);
@@ -56,6 +70,7 @@ export default function AuthForm({ mode, next }: { mode: "login" | "signup"; nex
                 const { error } = await supabase.auth.signInWithPassword({
                     email: email.trim(),
                     password,
+                    options: { captchaToken: token },
                 });
                 if (error) {
                     setError(error.message);
@@ -67,6 +82,9 @@ export default function AuthForm({ mode, next }: { mode: "login" | "signup"; nex
         } catch (err) {
             setError(err instanceof Error ? err.message : "Something went wrong. Check the browser console.");
         } finally {
+            // A captcha token works only once, so get a fresh one for the next try
+            turnstile.current?.reset();
+            setCaptchaToken("");
             setBusy(false);
         }
     }
@@ -127,7 +145,19 @@ export default function AuthForm({ mode, next }: { mode: "login" | "signup"; nex
                             />
                         </label>
                     )}
-                    <button type="submit" disabled={busy} className="btn btn-light w-full">
+
+                    {SITE_KEY && (
+                        <Turnstile
+                            ref={turnstile}
+                            siteKey={SITE_KEY}
+                            onSuccess={setCaptchaToken}
+                            onExpire={() => setCaptchaToken("")}
+                            onError={() => setCaptchaToken("")}
+                            options={{ theme: "dark" }}
+                        />
+                    )}
+
+                    <button type="submit" disabled={busy || waitingForCaptcha} className="btn btn-light w-full">
                         {busy ? "Please wait..." : isSignup ? "Sign up" : "Log in"}
                     </button>
                 </form>
